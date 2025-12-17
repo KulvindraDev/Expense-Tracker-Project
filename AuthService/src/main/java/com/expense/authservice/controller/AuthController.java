@@ -1,14 +1,12 @@
 package com.expense.authservice.controller;
 
 import com.expense.authservice.entities.RefreshToken;
-import com.expense.authservice.eventProducer.UserInfoProducer;
-import com.expense.authservice.models.UserInfoDto;
+import com.expense.authservice.models.UserInfoDTO;
 import com.expense.authservice.response.JwtResponseDTO;
 import com.expense.authservice.services.JwtService;
 import com.expense.authservice.services.RefreshTokenService;
 import com.expense.authservice.services.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,22 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RestController
 public class AuthController {
-    @Autowired
     private JwtService jwtService;
-
-    @Autowired
     private RefreshTokenService refreshTokenService;
-
-    @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+
     @PostMapping("auth/v1/signup")
-    public ResponseEntity signUp (@RequestBody UserInfoDto userInfoDto) {
+    public ResponseEntity<JwtResponseDTO> signUp (@RequestBody UserInfoDTO userInfoDto) {
         try {
             Boolean isSignedUp = userDetailsService.signupUser(userInfoDto);
             if (Boolean.FALSE.equals(isSignedUp)) {
-                return new ResponseEntity("User already exist", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new JwtResponseDTO(), HttpStatus.BAD_REQUEST);
             }
+
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userInfoDto.getUsername());
             String jwtToken = jwtService.GenerateToken(userInfoDto.getUsername());
             return new ResponseEntity<>(JwtResponseDTO
@@ -43,7 +38,7 @@ public class AuthController {
                     .build(), HttpStatus.OK
             );
         } catch (Exception e){
-            return new ResponseEntity<>("Exception in User Service", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new JwtResponseDTO(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

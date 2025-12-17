@@ -1,6 +1,5 @@
 package com.expense.authservice.eventProducer;
 
-import com.expense.authservice.models.UserInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,20 +10,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserInfoProducer {
-    private final KafkaTemplate<String, UserInfoDto> kafkaTemplate;
+    private final KafkaTemplate<String, UserInfoEvent> kafkaTemplate;
 
     @Value("${spring.kafka.topic.name}")
     private String TOPIC_NAME;
 
     @Autowired
-    UserInfoProducer (KafkaTemplate<String, UserInfoDto> kafkaTemplate) {
+    UserInfoProducer (KafkaTemplate<String, UserInfoEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendInfoToKafka(UserInfoEvent userInfoDto) {
+    public void sendInfoToKafka(UserInfoEvent userInfoEvent) {
         Message<UserInfoEvent> message = MessageBuilder
-                .withPayload(userInfoDto)
-                .setHeader(KafkaHeaders.TOPIC, TOPIC_NAME).build();
+                .withPayload(userInfoEvent)
+                .setHeader(KafkaHeaders.TOPIC, TOPIC_NAME)
+                .build();
         kafkaTemplate.send(message);
     }
 }

@@ -2,28 +2,24 @@ package com.expense.userservice.deserializer;
 
 import com.expense.userservice.models.UserInfoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import java.util.Map;
-
 public class UserInfoDeserializer implements Deserializer<UserInfoDTO> {
-    @Override
-    public void configure(Map<String, ?> configs, boolean isKey) {
+    private final ObjectMapper mapper;
+
+    public UserInfoDeserializer() {
+        this.mapper = new ObjectMapper();
+        this.mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
     @Override
-    public UserInfoDTO deserialize (String arg0, byte[] arg1) {
-        ObjectMapper mapper = new ObjectMapper();
-        UserInfoDTO user = null;
+    public UserInfoDTO deserialize (String topic, byte[] data) {
+        if (data == null) return null;
         try {
-            user = mapper.readValue(arg1, UserInfoDTO.class);
+            return mapper.readValue(data, UserInfoDTO.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return user;
-    }
-
-    @Override
-    public void close() {
     }
 }

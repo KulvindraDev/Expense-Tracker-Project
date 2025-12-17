@@ -3,8 +3,6 @@ package com.expense.authservice.auth;
 import com.expense.authservice.eventProducer.UserInfoProducer;
 import com.expense.authservice.repository.UserRepository;
 import com.expense.authservice.services.UserDetailsServiceImpl;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +22,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableMethodSecurity
-@Data
 public class SecurityConfig {
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    @Autowired
-    private final UserInfoProducer userInfoProducer;
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserDetailsServiceImpl userDetailsServiceImpl) {
+        this.passwordEncoder = passwordEncoder;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    }
 
     @Bean
     public UserDetailsService userDetailsService (UserRepository userRepository, PasswordEncoder passwordEncoder, UserInfoProducer userInfoProducer) {

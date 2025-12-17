@@ -4,39 +4,37 @@ import com.expense.userservice.entities.UserInfo;
 import com.expense.userservice.models.UserInfoDTO;
 import com.expense.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 @Service
 @RequiredArgsConstructor
 public class UserService
 {
-    @Autowired
     private final UserRepository userRepository;
 
     public UserInfoDTO createOrUpdateUser(UserInfoDTO userInfoDto){
-        UnaryOperator<UserInfo> updatingUser = user -> {
-            return userRepository.save(userInfoDto.transformToUserInfo());
-        };
-
-        Supplier<UserInfo> createUser = () -> {
-            return userRepository.save(userInfoDto.transformToUserInfo());
-        };
-
         UserInfo userInfo = userRepository.findByUserId(userInfoDto.getUserId())
-                .map(updatingUser)
-                .orElseGet(createUser);
+                .orElse(null);
+
+        UserInfo userToSave = userInfo != null ? userInfo : new UserInfo();
+        userToSave.setUserId(userInfoDto.getUserId());
+        userToSave.setFirstName(userInfoDto.getFirstName());
+        userToSave.setLastName(userInfoDto.getLastName());
+        userToSave.setEmailId(userInfoDto.getEmailId());
+        userToSave.setPhoneNumber(userInfoDto.getPhoneNumber());
+        userToSave.setProfilePic(userInfoDto.getProfilePic());
+
+        UserInfo savedUser = userRepository.save(userToSave);
+
         return new UserInfoDTO(
-                userInfo.getUserId(),
-                userInfo.getFirstName(),
-                userInfo.getLastName(),
-                userInfo.getEmailId(),
-                userInfo.getPhoneNumber(),
-                userInfo.getProfilePic()
+                savedUser.getUserId(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                savedUser.getEmailId(),
+                savedUser.getPhoneNumber(),
+                savedUser.getProfilePic()
         );
     }
 
