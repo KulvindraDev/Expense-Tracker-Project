@@ -1,0 +1,23 @@
+# Gradle
+src/test/
+# Test files
+
+logs/
+*.log
+# Logs
+
+Thumbs.db
+.DS_Store
+# OS
+
+.vscode/
+*.iws
+*.ipr
+*.iml
+.idea/
+# IDE
+
+!gradle/wrapper/gradle-wrapper.jar
+build/
+.gradle/
+
